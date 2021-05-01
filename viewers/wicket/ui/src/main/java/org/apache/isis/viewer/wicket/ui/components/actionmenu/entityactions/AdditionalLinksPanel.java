@@ -56,17 +56,17 @@ extends PanelAbstract<List<LinkAndLabel>, ListOfLinksModel> {
     public enum Style {
         INLINE_LIST {
             @Override
-            AdditionalLinksPanel newPanel(String id, List<LinkAndLabel> links) {
+            public AdditionalLinksPanel newPanel(String id, List<LinkAndLabel> links) {
                 return new AdditionalLinksAsListInlinePanel(id, links);
             }
         },
         DROPDOWN {
             @Override
-            AdditionalLinksPanel newPanel(String id, List<LinkAndLabel> links) {
+            public AdditionalLinksPanel newPanel(String id, List<LinkAndLabel> links) {
                 return new AdditionalLinksAsDropDownPanel(id, links);
             }
         };
-        abstract AdditionalLinksPanel newPanel(String id, List<LinkAndLabel> links);
+        public abstract AdditionalLinksPanel newPanel(String id, List<LinkAndLabel> links);
     }
 
     public static AdditionalLinksPanel addAdditionalLinks(

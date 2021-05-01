@@ -235,6 +235,12 @@ body {
     width: 3%;
 }
 
+.collectionContentsAsAjaxTablePanel table.contents thead .action-column,
+.collectionContentsAsAjaxTablePanel table.contents tbody .action-column {
+    text-align: center;
+    width: 3%;
+}
+
 .collectionContentsAsAjaxTablePanel table.contents a:hover {
     text-decoration:underline;
 }

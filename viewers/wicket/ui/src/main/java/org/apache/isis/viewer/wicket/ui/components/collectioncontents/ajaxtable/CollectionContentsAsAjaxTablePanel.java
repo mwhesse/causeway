@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.wicket.Component;
@@ -46,12 +47,14 @@ import org.apache.isis.core.metamodel.facets.object.grid.GridFacet;
 import org.apache.isis.core.metamodel.spec.ManagedObject;
 import org.apache.isis.core.metamodel.spec.ObjectSpecification;
 import org.apache.isis.core.metamodel.spec.feature.MixedIn;
+import org.apache.isis.core.metamodel.spec.feature.ObjectAction;
 import org.apache.isis.core.metamodel.spec.feature.ObjectAssociation;
 import org.apache.isis.core.runtime.memento.ObjectMemento;
 import org.apache.isis.viewer.wicket.model.models.EntityCollectionModel;
 import org.apache.isis.viewer.wicket.ui.components.collection.bulk.BulkActionsProvider;
 import org.apache.isis.viewer.wicket.ui.components.collection.count.CollectionCountProvider;
 import org.apache.isis.viewer.wicket.ui.components.collectioncontents.ajaxtable.columns.ColumnAbstract;
+import org.apache.isis.viewer.wicket.ui.components.collectioncontents.ajaxtable.columns.ObjectAdapterActionColumn;
 import org.apache.isis.viewer.wicket.ui.components.collectioncontents.ajaxtable.columns.ObjectAdapterPropertyColumn;
 import org.apache.isis.viewer.wicket.ui.components.collectioncontents.ajaxtable.columns.ObjectAdapterTitleColumn;
 import org.apache.isis.viewer.wicket.ui.components.collectioncontents.ajaxtable.columns.ObjectAdapterToggleboxColumn;
@@ -111,6 +114,8 @@ implements CollectionCountProvider {
                 getWicketViewerSettings().getMaxTitleLengthInStandaloneTables());
 
         addPropertyColumnsIfRequired(columns);
+        
+        addActionsColumnIfRequired(columns);
 
         val dataProvider = new CollectionContentsSortableDataProvider(model);
         dataTable = new IsisAjaxFallbackDataTable<>(ID_TABLE, columns, dataProvider, model.getPageSize(), toggleboxColumn);
@@ -118,7 +123,15 @@ implements CollectionCountProvider {
 
     }
 
-    private BulkActionsProvider getBulkActionsProvider() {
+    private void addActionsColumnIfRequired(List<IColumn<ManagedObject, String>> columns) {
+        final ObjectSpecification objectSpec = getModel().getTypeOfSpecification();
+        val actions = objectSpec.streamActions(MixedIn.INCLUDED).collect(Collectors.toList());
+        if(! actions.isEmpty()) {
+        	columns.add(createObjectAdapterActionsColumn());
+        }
+	}
+
+	private BulkActionsProvider getBulkActionsProvider() {
         Component component = this;
         while(component != null) {
             if(component instanceof BulkActionsProvider) {
@@ -309,7 +322,14 @@ implements CollectionCountProvider {
                 describedAs);
     }
 
-
+    private ObjectAdapterActionColumn createObjectAdapterActionsColumn() {
+        val commonContext = super.getCommonContext();
+        return new ObjectAdapterActionColumn(
+                commonContext,
+                getModel().getVariant(),
+                Model.of(""), // header
+                getModel().getTypeOfSpecification().getLogicalTypeName());
+    }
 
     @Override
     protected void onModelChanged() {

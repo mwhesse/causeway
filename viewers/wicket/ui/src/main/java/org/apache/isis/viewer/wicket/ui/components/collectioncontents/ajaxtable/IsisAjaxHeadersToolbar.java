@@ -42,6 +42,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.Strings;
 
+import org.apache.isis.viewer.wicket.ui.components.collectioncontents.ajaxtable.columns.ObjectAdapterActionColumn;
 import org.apache.isis.viewer.wicket.ui.components.collectioncontents.ajaxtable.columns.ObjectAdapterTitleColumn;
 import org.apache.isis.viewer.wicket.ui.util.CssClassAppender;
 
@@ -120,29 +121,27 @@ public class IsisAjaxHeadersToolbar<S> extends AbstractToolbar
                 if (column.isSortable())
                 {
                     header = newSortableHeader("header", column.getSortProperty(), stateLocator);
-
-                    if (column instanceof IStyledColumn)
-                    {
-                        CssAttributeBehavior cssAttributeBehavior = new CssAttributeBehavior()
-                        {
-                            private static final long serialVersionUID = 1L;
-
-                            @Override
-                            protected String getCssClass()
-                            {
-                                return ((IStyledColumn<?, S>)column).getCssClass();
-                            }
-                        };
-
-                        header.add(cssAttributeBehavior);
-                    }
-
                 }
                 else
                 {
                     header = new WebMarkupContainer("header");
                 }
 
+                if (column instanceof IStyledColumn)
+                {
+                    CssAttributeBehavior cssAttributeBehavior = new CssAttributeBehavior()
+                    {
+                        private static final long serialVersionUID = 1L;
+
+                        @Override
+                        protected String getCssClass()
+                        {
+                            return ((IStyledColumn<?, S>)column).getCssClass();
+                        }
+                    };
+
+                    header.add(cssAttributeBehavior);
+                }
 
                 item.add(header);
                 item.setRenderBodyOnly(true);
@@ -152,7 +151,10 @@ public class IsisAjaxHeadersToolbar<S> extends AbstractToolbar
 
                 if(column instanceof ObjectAdapterTitleColumn) {
                     header.add(new CssClassAppender("title-column"));
+                } else if(column instanceof ObjectAdapterActionColumn) {
+                    header.add(new CssClassAppender("action-column"));
                 }
+
             }
         };
         add(headers);
