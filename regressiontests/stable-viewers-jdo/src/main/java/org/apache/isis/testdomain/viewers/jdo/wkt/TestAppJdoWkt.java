@@ -38,6 +38,7 @@ import org.apache.isis.core.config.presets.IsisPresets;
 import org.apache.isis.testdomain.conf.Configuration_usingJdo;
 import org.apache.isis.testdomain.conf.Configuration_usingWicket;
 import org.apache.isis.testdomain.jdo.JdoInventoryJaxbVm;
+import org.apache.isis.testdomain.jdo.JdoInventoryVm;
 import org.apache.isis.testdomain.jdo.JdoTestFixtures;
 import org.apache.isis.testdomain.model.valuetypes.composite.CalendarEventJaxbVm;
 import org.apache.isis.viewer.wicket.viewer.IsisModuleViewerWicketViewer;
@@ -92,6 +93,11 @@ public class TestAppJdoWkt extends SpringBootServletInitializer {
         @Action @ActionLayout(sequence = "0.2")
         public JdoInventoryJaxbVm openSamplePage() {
             return testFixtures.setUpViewmodelWith3Books();
+        }
+
+        @Action @ActionLayout(sequence = "0.3")
+        public JdoInventoryVm openSamplePageNonJaxb() {
+            return factoryService.viewModel(new JdoInventoryVm());
         }
 
         @Action @ActionLayout(sequence = "0.3")
